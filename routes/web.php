@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\Products;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +29,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard/{search?}', [DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -35,4 +37,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// add to cart
+Route::prefix('cart')->controller(CartController::class)->group(function () {
+    Route::get('view', 'view')->name('cart.view');
+    Route::post('store/{product}', 'store')->name('cart.store');
+    Route::patch('update/{product}', 'update')->name('cart.update');
+    Route::delete('delete/{product}', 'delete')->name('cart.delete');
+
+});
+
 require __DIR__.'/auth.php';
+
+
